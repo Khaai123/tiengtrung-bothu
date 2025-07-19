@@ -289,6 +289,7 @@
 
     // =================================================================
     // ================ Q&A RECORDER (LEFT PANEL) LOGIC ================
+    // (Phần này giữ nguyên, không thay đổi)
     // =================================================================
     if (!('webkitSpeechRecognition' in window)) {
         alert('Speech recognition not supported in this browser.');
@@ -559,8 +560,8 @@
 
     // =================================================================
     // ================= SCORING LOGIC (IMPROVED) ======================
+    // (Phần này giữ nguyên, không thay đổi)
     // =================================================================
-
     function levenshteinDistance(s1, s2) {
         const cleanS1 = s1.toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, '');
         const cleanS2 = s2.toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, '');
@@ -656,8 +657,8 @@
 
     // =================================================================
     // ================= TEXT READER (RIGHT PANEL) LOGIC =================
+    // (Phần này giữ nguyên, không thay đổi)
     // =================================================================
-
     const textNodeFilter = {
         acceptNode: function(node) {
             if (node.parentNode && (node.parentNode.classList.contains('script-checker-input') ||
@@ -828,18 +829,31 @@
     // =========== LOGIC MỚI CHO TÍNH NĂNG STROKE ORDER QUIZ ============
     // =================================================================
     
+    // *** BẮT ĐẦU PHƯƠNG PHÁP HYBRID ***
+    // 1. Dữ liệu có sẵn cho các chữ thường gặp (hoạt động offline)
+    const localRadicalData = {
+        '你': [{ radical: '亻', name: 'Nhân đứng', meaning: 'người' }, { radical: '尔', name: 'Nhĩ', meaning: 'bạn, ngươi' }],
+        '好': [{ radical: '女', name: 'Nữ', meaning: 'phụ nữ' }, { radical: '子', name: 'Tử', meaning: 'con cái' }],
+        '我': [{ radical: '手', name: 'Thủ', meaning: 'tay' }, { radical: '戈', name: 'Qua', meaning: 'cái mác (vũ khí)' }],
+        '是': [{ radical: '日', name: 'Nhật', meaning: 'mặt trời, ngày' }, { radical: '正', name: 'Chính', meaning: 'ngay thẳng' }],
+        '爱': [{ radical: '爫', name: 'Trảo', meaning: 'móng vuốt' }, { radical: '冖', name: 'Mịch', meaning: 'trùm khăn' }, { radical: '友', name: 'Hữu', meaning: 'bạn bè' }],
+        '学': [{ radical: '⺍', name: 'Học', meaning: 'học tập' }, { radical: '子', name: 'Tử', meaning: 'con cái' }],
+        '汉': [{ radical: '氵', name: 'Thủy', meaning: 'nước' }, { radical: '又', name: 'Hựu', meaning: 'lại, lần nữa' }],
+        '语': [{ radical: '讠', name: 'Ngôn', meaning: 'ngôn ngữ' }, { radical: '吾', name: 'Ngô', meaning: 'tôi, ta' }],
+        '雨': [{ radical: '一', name: 'Nhất', meaning: 'số một' }, { radical: '冂', name: 'Quynh', meaning: 'vùng biên giới xa' }, { radical: '丨', name: 'Cổn', meaning: 'nét sổ' }]
+    };
+
     const strokeOrderModal = document.getElementById('stroke-order-modal');
     const strokeOrderContainer = document.getElementById('stroke-order-container');
     const strokeOrderCloseBtn = document.getElementById('stroke-order-close-btn');
     const strokeOrderAnimateAllBtn = document.getElementById('stroke-order-animate-all-btn');
     let hanziWriters = [];
 
-    // *** BẮT ĐẦU THAY ĐỔI: Sử dụng API ***
     async function startMultiPractice(text) {
         const characters = text.split('').filter(char => /[\u4e00-\u9fa5]/.test(char));
         if (characters.length === 0) return;
 
-        strokeOrderContainer.innerHTML = 'Đang chuẩn bị dữ liệu...'; // Thêm thông báo chờ
+        strokeOrderContainer.innerHTML = 'Đang chuẩn bị dữ liệu...';
         hanziWriters = [];
         strokeOrderModal.style.display = 'flex';
 
@@ -853,31 +867,39 @@
             
             const infoDiv = document.createElement('div');
             infoDiv.className = 'radical-info';
-            infoDiv.innerHTML = '<em>🔍 Đang tải...</em>'; // Thông báo tạm thời
 
             wrapperDiv.appendChild(charDiv);
             wrapperDiv.appendChild(infoDiv);
 
-            // Bắt đầu tra cứu thông tin bộ thủ từ API
-            try {
-                const response = await fetch(`https://hanzidecomposer.com/api/v1/decompose/${character}`);
-                if (!response.ok) throw new Error('API request failed');
-                
-                const data = await response.json();
-                
-                if (data && data.success && data.decomposition && data.decomposition.length > 0) {
-                    let infoHtml = '<div><b>Thành phần:</b></div>';
-                     // API này trả về các thành phần, có thể là bộ thủ hoặc các chữ khác
-                    data.decomposition.forEach(component => {
-                         infoHtml += `<div>- ${component.character}</div>`;
-                    });
-                    infoDiv.innerHTML = infoHtml;
-                } else {
-                    infoDiv.innerHTML = '<em>Không phân tích được.</em>';
+            // 2. Ưu tiên tìm trong dữ liệu có sẵn
+            if (localRadicalData[character]) {
+                let infoHtml = '<div><b>Thành phần (có sẵn):</b></div>';
+                localRadicalData[character].forEach(r => {
+                    infoHtml += `<div>- ${r.radical} (${r.name}): ${r.meaning}</div>`;
+                });
+                infoDiv.innerHTML = infoHtml;
+            } else {
+                // 3. Nếu không có, mới gọi API
+                infoDiv.innerHTML = '<em>🔍 Đang tra cứu online...</em>';
+                try {
+                    const response = await fetch(`https://hanzidecomposer.com/api/v1/decompose/${character}`);
+                    if (!response.ok) throw new Error('API request failed');
+                    
+                    const data = await response.json();
+                    
+                    if (data && data.success && data.decomposition && data.decomposition.length > 0) {
+                        let infoHtml = '<div><b>Thành phần (online):</b></div>';
+                        data.decomposition.forEach(component => {
+                            infoHtml += `<div>- ${component.character}</div>`;
+                        });
+                        infoDiv.innerHTML = infoHtml;
+                    } else {
+                        infoDiv.innerHTML = '<em>Không phân tích được.</em>';
+                    }
+                } catch (error) {
+                    console.error(`Lỗi khi tra cứu chữ ${character}:`, error);
+                    infoDiv.innerHTML = '<em>⚠️ Lỗi mạng hoặc API không phản hồi. Vui lòng kiểm tra kết nối Internet.</em>';
                 }
-            } catch (error) {
-                console.error(`Lỗi khi tra cứu chữ ${character}:`, error);
-                infoDiv.innerHTML = '<em>⚠️ Lỗi khi tải dữ liệu.</em>';
             }
             
             return { wrapper: wrapperDiv, char: character, targetId: charDiv.id };
@@ -885,7 +907,7 @@
 
         const resolvedChars = await Promise.all(characterPromises);
         
-        strokeOrderContainer.innerHTML = ''; // Xóa thông báo chờ
+        strokeOrderContainer.innerHTML = '';
         
         resolvedChars.forEach(resolved => {
             strokeOrderContainer.appendChild(resolved.wrapper);
@@ -898,7 +920,8 @@
 
         hanziWriters.forEach(writer => writer.quiz());
     }
-    // *** KẾT THÚC THAY ĐỔI ***
+    // *** KẾT THÚC PHƯƠNG PHÁP HYBRID ***
+
 
     function hidePractice() {
         strokeOrderModal.style.display = 'none';
