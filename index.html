@@ -260,6 +260,7 @@
 <script>
     // =================================================================
     // =========== SHARED & GLOBAL VARIABLES AND FUNCTIONS ===========
+    // (Phần này giữ nguyên, không thay đổi)
     // =================================================================
     let chineseTTSVoice = null;
     let recognition;
@@ -829,8 +830,7 @@
     // =========== LOGIC MỚI CHO TÍNH NĂNG STROKE ORDER QUIZ ============
     // =================================================================
     
-    // *** BẮT ĐẦU PHƯƠNG PHÁP HYBRID ***
-    // 1. Dữ liệu có sẵn cho các chữ thường gặp (hoạt động offline)
+    // *** BẮT ĐẦU PHƯƠNG PHÁP HYBRID - ĐÃ SỬA VỚI CORS PROXY ***
     const localRadicalData = {
         '你': [{ radical: '亻', name: 'Nhân đứng', meaning: 'người' }, { radical: '尔', name: 'Nhĩ', meaning: 'bạn, ngươi' }],
         '好': [{ radical: '女', name: 'Nữ', meaning: 'phụ nữ' }, { radical: '子', name: 'Tử', meaning: 'con cái' }],
@@ -871,7 +871,6 @@
             wrapperDiv.appendChild(charDiv);
             wrapperDiv.appendChild(infoDiv);
 
-            // 2. Ưu tiên tìm trong dữ liệu có sẵn
             if (localRadicalData[character]) {
                 let infoHtml = '<div><b>Thành phần (có sẵn):</b></div>';
                 localRadicalData[character].forEach(r => {
@@ -879,11 +878,14 @@
                 });
                 infoDiv.innerHTML = infoHtml;
             } else {
-                // 3. Nếu không có, mới gọi API
                 infoDiv.innerHTML = '<em>🔍 Đang tra cứu online...</em>';
                 try {
-                    const response = await fetch(`https://hanzidecomposer.com/api/v1/decompose/${character}`);
-                    if (!response.ok) throw new Error('API request failed');
+                    // *** ĐÂY LÀ DÒNG ĐÃ SỬA ***
+                    const apiUrl = `https://hanzidecomposer.com/api/v1/decompose/${character}`;
+                    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(apiUrl)}`;
+                    
+                    const response = await fetch(proxyUrl);
+                    if (!response.ok) throw new Error('API request failed via proxy');
                     
                     const data = await response.json();
                     
@@ -898,7 +900,7 @@
                     }
                 } catch (error) {
                     console.error(`Lỗi khi tra cứu chữ ${character}:`, error);
-                    infoDiv.innerHTML = '<em>⚠️ Lỗi mạng hoặc API không phản hồi. Vui lòng kiểm tra kết nối Internet.</em>';
+                    infoDiv.innerHTML = '<em>⚠️ Lỗi mạng hoặc API không phản hồi.</em>';
                 }
             }
             
@@ -920,8 +922,6 @@
 
         hanziWriters.forEach(writer => writer.quiz());
     }
-    // *** KẾT THÚC PHƯƠNG PHÁP HYBRID ***
-
 
     function hidePractice() {
         strokeOrderModal.style.display = 'none';
