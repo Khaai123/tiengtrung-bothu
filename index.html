@@ -840,52 +840,75 @@
     const strokeOrderAnimateAllBtn = document.getElementById('stroke-order-animate-all-btn');
     let hanziWriters = [];
 
-    // THAY ĐỔI: Cập nhật hàm startMultiPractice để hiển thị bộ thủ
+    // THAY THẾ TOÀN BỘ HÀM CŨ BẰNG HÀM NÀY
     function startMultiPractice(text) {
-        const characters = text.split('').filter(char => /[\u4e00-\u9fa5]/.test(char));
-        if (characters.length === 0) {
-            return;
-        }
         strokeOrderContainer.innerHTML = '';
         hanziWriters = [];
         strokeOrderModal.style.display = 'flex';
 
-        characters.forEach((character, index) => {
-            // Tạo một khối chứa cho cả ô viết và thông tin bộ thủ
+        // CẢI TIẾN: Ưu tiên kiểm tra xem toàn bộ chuỗi có phải là một từ trong dữ liệu không
+        if (typeof localRadicalData !== 'undefined' && localRadicalData[text]) {
+            const character = text; // Toàn bộ chuỗi là một ký tự/từ
             const charBlock = document.createElement('div');
             charBlock.className = 'char-practice-block';
 
-            // Tạo div riêng cho ô viết HanziWriter
             const writerDiv = document.createElement('div');
-            writerDiv.id = `char-target-${index}`;
+            writerDiv.id = `char-target-0`;
             writerDiv.className = 'char-writer-box';
             charBlock.appendChild(writerDiv);
 
-            // Kiểm tra và hiển thị thông tin bộ thủ từ localRadicalData
-            // Đảm bảo rằng file radical_data.js đã được tải
-            if (typeof localRadicalData !== 'undefined' && localRadicalData[character]) {
-                const radicals = localRadicalData[character];
-                const infoDiv = document.createElement('div');
-                infoDiv.className = 'radical-info';
-                infoDiv.innerHTML = radicals.map(rad => `<b>${rad.r}</b> (${rad.n}): ${rad.m}`).join('<br>');
-                charBlock.appendChild(infoDiv);
-            }
+            const radicals = localRadicalData[character];
+            const infoDiv = document.createElement('div');
+            infoDiv.className = 'radical-info';
+            infoDiv.innerHTML = radicals.map(rad => `<b>${rad.r}</b> (${rad.n}): ${rad.m}`).join('<br>');
+            charBlock.appendChild(infoDiv);
             
             strokeOrderContainer.appendChild(charBlock);
 
-            // Tạo HanziWriter cho chữ này
             const writer = HanziWriter.create(writerDiv.id, character, {
-                width: 150,
-                height: 150,
-                padding: 5,
-                showOutline: true,
-                showCharacter: false,
-                strokeAnimationSpeed: 1,
-                delayBetweenStrokes: 200,
+                width: 150, height: 150, padding: 5, showOutline: true,
+                showCharacter: false, strokeAnimationSpeed: 1, delayBetweenStrokes: 200,
                 quizMistakeAnimationSpeed: 0.8,
             });
             hanziWriters.push(writer);
-        });
+
+        } else {
+            // Nếu không phải là một từ, thì xử lý từng chữ như cũ
+            const characters = text.split('').filter(char => /[\u4e00-\u9fa5]/.test(char));
+            if (characters.length === 0) {
+                hidePractice();
+                return;
+            }
+
+            characters.forEach((character, index) => {
+                const charBlock = document.createElement('div');
+                charBlock.className = 'char-practice-block';
+
+                const writerDiv = document.createElement('div');
+                writerDiv.id = `char-target-${index}`;
+                writerDiv.className = 'char-writer-box';
+                charBlock.appendChild(writerDiv);
+
+                if (typeof localRadicalData !== 'undefined' && localRadicalData[character]) {
+                    const radicals = localRadicalData[character];
+                    const infoDiv = document.createElement('div');
+                    infoDiv.className = 'radical-info';
+                    infoDiv.innerHTML = radicals.map(rad => `<b>${rad.r}</b> (${rad.n}): ${rad.m}`).join('<br>');
+                    charBlock.appendChild(infoDiv);
+                }
+                
+                strokeOrderContainer.appendChild(charBlock);
+
+                const writer = HanziWriter.create(writerDiv.id, character, {
+                    width: 150, height: 150, padding: 5, showOutline: true,
+                    showCharacter: false, strokeAnimationSpeed: 1, delayBetweenStrokes: 200,
+                    quizMistakeAnimationSpeed: 0.8,
+                });
+                hanziWriters.push(writer);
+            });
+        }
+
+        // Bắt đầu quiz cho tất cả các chữ đã được tạo
         hanziWriters.forEach(writer => writer.quiz());
     }
 
@@ -900,7 +923,6 @@
         hanziWriters.forEach(writer => writer.animateCharacter());
     });
 
-    // THAY ĐỔI: Cập nhật sự kiện nhấn phím
     document.addEventListener('keydown', function(event) {
         // Kích hoạt bằng Alt + P
         if (event.altKey && (event.key === 'P' || event.key === 'p')) {
