@@ -259,8 +259,7 @@
 
 <script>
     // =================================================================
-    // =========== SHARED & GLOBAL VARIABLES AND FUNCTIONS ===========
-    // (Phần này giữ nguyên, không thay đổi)
+    // =========== Các phần JavaScript khác (giữ nguyên) ============
     // =================================================================
     let chineseTTSVoice = null;
     let recognition;
@@ -288,10 +287,6 @@
         }
     }
 
-    // =================================================================
-    // ================ Q&A RECORDER (LEFT PANEL) LOGIC ================
-    // (Phần này giữ nguyên, không thay đổi)
-    // =================================================================
     if (!('webkitSpeechRecognition' in window)) {
         alert('Speech recognition not supported in this browser.');
     } else {
@@ -559,10 +554,6 @@
         });
     });
 
-    // =================================================================
-    // ================= SCORING LOGIC (IMPROVED) ======================
-    // (Phần này giữ nguyên, không thay đổi)
-    // =================================================================
     function levenshteinDistance(s1, s2) {
         const cleanS1 = s1.toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, '');
         const cleanS2 = s2.toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, '');
@@ -656,10 +647,6 @@
         userAnswerDiv.innerHTML = highlightedHtml || '';
     }
 
-    // =================================================================
-    // ================= TEXT READER (RIGHT PANEL) LOGIC =================
-    // (Phần này giữ nguyên, không thay đổi)
-    // =================================================================
     const textNodeFilter = {
         acceptNode: function(node) {
             if (node.parentNode && (node.parentNode.classList.contains('script-checker-input') ||
@@ -830,17 +817,9 @@
     // =========== LOGIC MỚI CHO TÍNH NĂNG STROKE ORDER QUIZ ============
     // =================================================================
     
-    // *** BẮT ĐẦU PHƯƠNG PHÁP HYBRID - ĐÃ SỬA VỚI CORS PROXY ***
+    // *** PHIÊN BẢN OFFLINE HOÀN TOÀN VỚI DỮ LIỆU LỚN ***
     const localRadicalData = {
-        '你': [{ radical: '亻', name: 'Nhân đứng', meaning: 'người' }, { radical: '尔', name: 'Nhĩ', meaning: 'bạn, ngươi' }],
-        '好': [{ radical: '女', name: 'Nữ', meaning: 'phụ nữ' }, { radical: '子', name: 'Tử', meaning: 'con cái' }],
-        '我': [{ radical: '手', name: 'Thủ', meaning: 'tay' }, { radical: '戈', name: 'Qua', meaning: 'cái mác (vũ khí)' }],
-        '是': [{ radical: '日', name: 'Nhật', meaning: 'mặt trời, ngày' }, { radical: '正', name: 'Chính', meaning: 'ngay thẳng' }],
-        '爱': [{ radical: '爫', name: 'Trảo', meaning: 'móng vuốt' }, { radical: '冖', name: 'Mịch', meaning: 'trùm khăn' }, { radical: '友', name: 'Hữu', meaning: 'bạn bè' }],
-        '学': [{ radical: '⺍', name: 'Học', meaning: 'học tập' }, { radical: '子', name: 'Tử', meaning: 'con cái' }],
-        '汉': [{ radical: '氵', name: 'Thủy', meaning: 'nước' }, { radical: '又', name: 'Hựu', meaning: 'lại, lần nữa' }],
-        '语': [{ radical: '讠', name: 'Ngôn', meaning: 'ngôn ngữ' }, { radical: '吾', name: 'Ngô', meaning: 'tôi, ta' }],
-        '雨': [{ radical: '一', name: 'Nhất', meaning: 'số một' }, { radical: '冂', name: 'Quynh', meaning: 'vùng biên giới xa' }, { radical: '丨', name: 'Cổn', meaning: 'nét sổ' }]
+        '的':[{radical:'白',name:'Bạch',meaning:'trắng'},{radical:'勺',name:'Thược',meaning:'cái thìa'}],'一':[{radical:'一',name:'Nhất',meaning:'số một'}],'是':[{radical:'日',name:'Nhật',meaning:'mặt trời'},{radical:'疋',name:'Thất',meaning:'đơn vị đo'}],'不':[{radical:'不',name:'Bất',meaning:'không'}],'了':[{radical:'了',name:'Liễu',meaning:'xong'}],'在':[{radical:'土',name:'Thổ',meaning:'đất'}],'人':[{radical:'人',name:'Nhân',meaning:'người'}],'有':[{radical:'月',name:'Nguyệt',meaning:'mặt trăng'}],'我':[{radical:'手',name:'Thủ',meaning:'tay'},{radical:'戈',name:'Qua',meaning:'cái mác'}],'他':[{radical:'亻',name:'Nhân đứng',meaning:'người'},{radical:'也',name:'Dã',meaning:'cũng'}],'这':[{radical:'文',name:'Văn',meaning:'văn vẻ'}],'个':[{radical:'人',name:'Nhân',meaning:'người'}],'们':[{radical:'亻',name:'Nhân đứng',meaning:'người'},{radical:'门',name:'Môn',meaning:'cửa'}],'中':[{radical:'口',name:'Khẩu',meaning:'miệng'}],'来':[{radical:'木',name:'Mộc',meaning:'cây'}],'上':[{radical:'卜',name:'Bốc',meaning:'xem bói'}],'大':[{radical:'大',name:'Đại',meaning:'to lớn'}],'为':[{radical:'丶',name:'Chủ',meaning:'chấm'}],'和':[{radical:'禾',name:'Hòa',meaning:'lúa'},{radical:'口',name:'Khẩu',meaning:'miệng'}],'国':[{radical:'囗',name:'Vi',meaning:'vây quanh'},{radical:'玉',name:'Ngọc',meaning:'ngọc'}],'地':[{radical:'土',name:'Thổ',meaning:'đất'},{radical:'也',name:'Dã',meaning:'cũng'}],'到':[{radical:'至',name:'Chí',meaning:'đến'},{radical:'刂',name:'Đao',meaning:'con dao'}],'以':[{radical:'人',name:'Nhân',meaning:'người'}],'说':[{radical:'讠',name:'Ngôn',meaning:'lời nói'},{radical:'兑',name:'Đoài',meaning:'đoái'}],'时':[{radical:'日',name:'Nhật',meaning:'mặt trời'},{radical:'寸',name:'Thốn',meaning:'tấc'}],'要':[{radical:'覀',name:'Tây',meaning:'phía tây'},{radical:'女',name:'Nữ',meaning:'phụ nữ'}],'就':[{radical:'京',name:'Kinh',meaning:'kinh đô'},{radical:'尤',name:'Vưu',meaning:'đặc biệt'}],'出':[{radical:'山',name:'Sơn',meaning:'núi'}],'会':[{radical:'人',name:'Nhân',meaning:'người'},{radical:'云',name:'Vân',meaning:'mây'}],'可':[{radical:'口',name:'Khẩu',meaning:'miệng'},{radical:'丁',name:'Đinh',meaning:'can Đinh'}],'也':[{radical:'也',name:'Dã',meaning:'cũng'}],'你':[{radical:'亻',name:'Nhân đứng',meaning:'người'},{radical:'尔',name:'Nhĩ',meaning:'mày'}],'对':[{radical:'又',name:'Hựu',meaning:'lại'},{radical:'寸',name:'Thốn',meaning:'tấc'}],'生':[{radical:'生',name:'Sinh',meaning:'sống'}],'能':[{radical:'月',name:'Nguyệt',meaning:'mặt trăng'},{radical:'匕',name:'Chủy',meaning:'cái thìa'}],'而':[{radical:'而',name:'Nhi',meaning:'mà'}],'子':[{radical:'子',name:'Tử',meaning:'con'}],'那':[{radical:'邑',name:'Ấp',meaning:'vùng đất'},{radical:'冉',name:'Nhiễm',meaning:'yếu ớt'}],'得':[{radical:'彳',name:'Xích',meaning:'bước chân trái'},{radical:'日',name:'Nhật',meaning:'mặt trời'}],'于':[{radical:'二',name:'Nhị',meaning:'số hai'}],'着':[{radical:'羊',name:'Dương',meaning:'con dê'},{radical:'目',name:'Mục',meaning:'mắt'}],'下':[{radical:'卜',name:'Bốc',meaning:'xem bói'}],'给':[{radical:'纟',name:'Mịch',meaning:'sợi tơ'},{radical:'合',name:'Hợp',meaning:'hợp lại'}],'等':[{radical:'竹',name:'Trúc',meaning:'tre'},{radical:'寺',name:'Tự',meaning:'ngôi chùa'}],'去':[{radical:'土',name:'Thổ',meaning:'đất'}],'好':[{radical:'女',name:'Nữ',meaning:'phụ nữ'},{radical:'子',name:'Tử',meaning:'con'}],'过':[{radical:'辶',name:'Sước',meaning:'đi'}],'后':[{radical:'口',name:'Khẩu',meaning:'miệng'}],'小':[{radical:'小',name:'Tiểu',meaning:'nhỏ'}],'么':[{radical:'厶',name:'Tư',meaning:'riêng tư'}],'心':[{radical:'心',name:'Tâm',meaning:'trái tim'}],'多':[{radical:'夕',name:'Tịch',meaning:'đêm tối'}],'天':[{radical:'大',name:'Đại',meaning:'to lớn'}],'Tên':[{radical:'夕',name:'Tịch',meaning:'đêm tối'},{radical:'口',name:'Khẩu',meaning:'miệng'}],'Tác':[{radical:'亻',name:'Nhân đứng',meaning:'người'},{radical:'乍',name:'Sạ',meaning:'bỗng nhiên'}],'Ý':[{radical:'音',name:'Âm',meaning:'âm thanh'},{radical:'心',name:'Tâm',meaning:'trái tim'}],'Thập':[{radical:'十',name:'Thập',meaning:'số mười'}],'Vấn':[{radical:'门',name:'Môn',meaning:'cửa'},{radical:'口',name:'Khẩu',meaning:'miệng'}],'Năm':[{radical:'午',name:'Ngọ',meaning:'giữa trưa'}],'An':[{radical:'宀',name:'Miên',meaning:'mái nhà'},{radical:'女',name:'Nữ',meaning:'phụ nữ'}],'Lý':[{radical:'木',name:'Mộc',meaning:'cây'},{radical:'子',name:'Tử',meaning:'con'}],'Hiện':[{radical:'玉',name:'Ngọc',meaning:'ngọc'}],'Phát':[{radical:'癶',name:'Bát',meaning:'gạt ra'}],'Cảm':[{radical:'咸',name:'Hàm',meaning:'khắp'},{radical:'心',name:'Tâm',meaning:'trái tim'}],'Tìm':[{radical:'手',name:'Thủ',meaning:'tay'}],'Đồng':[{radical:'冂',name:'Quynh',meaning:'biên giới'},{radical:'口',name:'Khẩu',meaning:'miệng'}],'Kiến':[{radical:'见',name:'Kiến',meaning:'thấy'}],'Hành':[{radical:'行',name:'Hành',meaning:'đi'}],'Bên ngoài':[{radical:'夕',name:'Tịch',meaning:'đêm tối'},{radical:'卜',name:'Bốc',meaning:'xem bói'}],'Trước':[{radical:'刂',name:'Đao',meaning:'con dao'}],'Lực lượng':[{radical:'力',name:'Lực',meaning:'sức mạnh'}],'Nhìn':[{radical:'目',name:'Mục',meaning:'mắt'}],'Mặt':[{radical:'面',name:'Diện',meaning:'mặt'}],'Dụng cụ':[{radical:'用',name:'Dụng',meaning:'dùng'}],'Học':[{radical:'子',name:'Tử',meaning:'con'}],'Sự thật':[{radical:'匕',name:'Chủy',meaning:'cái thìa'}],'Đường':[{radical:'彳',name:'Xích',meaning:'bước chân trái'}],'Khí':[{radical:'气',name:'Khí',meaning:'không khí'}],'Điều':[{radical:'讠',name:'Ngôn',meaning:'lời nói'}],'Công việc':[{radical:'工',name:'Công',meaning:'công việc'}],'Trở thành':[{radical:'戈',name:'Qua',meaning:'cái mác'}],'Nhà':[{radical:'豕',name:'Thỉ',meaning:'con lợn'}],'Chỉ':[{radical:'口',name:'Khẩu',meaning:'miệng'}],'Như':[{radical:'女',name:'Nữ',meaning:'phụ nữ'},{radical:'口',name:'Khẩu',meaning:'miệng'}],'Biết':[{radical:'矢',name:'Thỉ',meaning:'mũi tên'},{radical:'口',name:'Khẩu',meaning:'miệng'}],'Tổng':[{radical:'糸',name:'Mịch',meaning:'sợi tơ'},{radical:'心',name:'Tâm',meaning:'trái tim'}],'Giữa':[{radical:'日',name:'Nhật',meaning:'mặt trời'}],'Xem':[{radical:'目',name:'Mục',meaning:'mắt'}],'Không có':[{radical:'月',name:'Nguyệt',meaning:'mặt trăng'}],'Từ':[{radical:'自',name:'Tự',meaning:'tự mình'}],'Tay':[{radical:'手',name:'Thủ',meaning:'tay'}],'Đầu':[{radical:'首',name:'Thủ',meaning:'đầu'}],'Chủ đề':[{radical:'页',name:'Hiệt',meaning:'trang giấy'}],'Phải':[{radical:'口',name:'Khẩu',meaning:'miệng'}],'Trái':[{radical:'工',name:'Công',meaning:'công việc'}],'Cao':[{radical:'高',name:'Cao',meaning:'cao'}],'Động':[{radical:'力',name:'Lực',meaning:'sức mạnh'}],'So sánh':[{radical:'比',name:'Tỷ',meaning:'so sánh'}],'Với':[{radical:'辶',name:'Sước',meaning:'đi'}],'Mở':[{radical:'门',name:'Môn',meaning:'cửa'}],'Thân':[{radical:'身',name:'Thân',meaning:'thân thể'}],'Gọi':[{radical:'口',name:'Khẩu',meaning:'miệng'}],'Mới':[{radical:'斤',name:'Cân',name:'cái rìu'}],'Gia đình':[{radical:'宀',name:'Miên',meaning:'mái nhà'}],'Thành':[{radical:'戊',name:'Mậu',meaning:'can Mậu'},{radical:'丁',name:'Đinh',meaning:'can Đinh'}],'Sách':[{radical:'聿',name:'Duật',meaning:'cái bút'}],'Thích':[{radical:'欠',name:'Khiếm',meaning:'thiếu'}],'Thứ hai':[{radical:'欠',name:'Khiếm',meaning:'thiếu'}],'Cơ thể':[{radical:'骨',name:'Cốt',meaning:'xương'}],'Ít':[{radical:'小',name:'Tiểu',meaning:'nhỏ'}],'Điện':[{radical:'雨',name:'Vũ',meaning:'mưa'},{radical:'申',name:'Thân',meaning:'thỉnh cầu'}],'Hình ảnh':[{radical:'彡',name:'Sam',meaning:'lông'}],'Mặc dù':[{radical:'口',name:'Khẩu',meaning:'miệng'}],'Hàng':[{radical:'彳',name:'Xích',meaning:'bước chân trái'}],'Đen':[{radical:'黑',name:'Hắc',meaning:'màu đen'}],'Trắng':[{radical:'白',name:'Bạch',meaning:'trắng'}],'Đỏ':[{radical:'赤',name:'Xích',meaning:'màu đỏ'}],'Xanh':[{radical:'青',name:'Thanh',meaning:'màu xanh'}],'Vàng':[{radical:'黄',name:'Hoàng',meaning:'màu vàng'}]
     };
 
     const strokeOrderModal = document.getElementById('stroke-order-modal');
@@ -849,15 +828,16 @@
     const strokeOrderAnimateAllBtn = document.getElementById('stroke-order-animate-all-btn');
     let hanziWriters = [];
 
-    async function startMultiPractice(text) {
+    // Phiên bản cuối cùng, chỉ sử dụng dữ liệu offline, không gọi API
+    function startMultiPractice(text) {
         const characters = text.split('').filter(char => /[\u4e00-\u9fa5]/.test(char));
         if (characters.length === 0) return;
 
-        strokeOrderContainer.innerHTML = 'Đang chuẩn bị dữ liệu...';
+        strokeOrderContainer.innerHTML = '';
         hanziWriters = [];
         strokeOrderModal.style.display = 'flex';
 
-        const characterPromises = characters.map(async (character, index) => {
+        characters.forEach((character, index) => {
             const wrapperDiv = document.createElement('div');
             wrapperDiv.className = 'character-wrapper';
             
@@ -871,49 +851,22 @@
             wrapperDiv.appendChild(charDiv);
             wrapperDiv.appendChild(infoDiv);
 
-            if (localRadicalData[character]) {
-                let infoHtml = '<div><b>Thành phần (có sẵn):</b></div>';
-                localRadicalData[character].forEach(r => {
+            // Chỉ tìm trong dữ liệu có sẵn
+            const charData = localRadicalData[character];
+            if (charData) {
+                let infoHtml = '<div><b>Thành phần:</b></div>';
+                charData.forEach(r => {
                     infoHtml += `<div>- ${r.radical} (${r.name}): ${r.meaning}</div>`;
                 });
                 infoDiv.innerHTML = infoHtml;
             } else {
-                infoDiv.innerHTML = '<em>🔍 Đang tra cứu online...</em>';
-                try {
-                    // *** ĐÂY LÀ DÒNG ĐÃ SỬA ***
-                    const apiUrl = `https://hanzidecomposer.com/api/v1/decompose/${character}`;
-                    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(apiUrl)}`;
-                    
-                    const response = await fetch(proxyUrl);
-                    if (!response.ok) throw new Error('API request failed via proxy');
-                    
-                    const data = await response.json();
-                    
-                    if (data && data.success && data.decomposition && data.decomposition.length > 0) {
-                        let infoHtml = '<div><b>Thành phần (online):</b></div>';
-                        data.decomposition.forEach(component => {
-                            infoHtml += `<div>- ${component.character}</div>`;
-                        });
-                        infoDiv.innerHTML = infoHtml;
-                    } else {
-                        infoDiv.innerHTML = '<em>Không phân tích được.</em>';
-                    }
-                } catch (error) {
-                    console.error(`Lỗi khi tra cứu chữ ${character}:`, error);
-                    infoDiv.innerHTML = '<em>⚠️ Lỗi mạng hoặc API không phản hồi.</em>';
-                }
+                // Nếu không có, hiển thị thông báo
+                infoDiv.innerHTML = '<em>Không có dữ liệu cho chữ này.</em>';
             }
             
-            return { wrapper: wrapperDiv, char: character, targetId: charDiv.id };
-        });
+            strokeOrderContainer.appendChild(wrapperDiv);
 
-        const resolvedChars = await Promise.all(characterPromises);
-        
-        strokeOrderContainer.innerHTML = '';
-        
-        resolvedChars.forEach(resolved => {
-            strokeOrderContainer.appendChild(resolved.wrapper);
-            const writer = HanziWriter.create(resolved.targetId, resolved.char, {
+            const writer = HanziWriter.create(charDiv.id, character, {
                 width: 150, height: 150, padding: 5, showOutline: true,
                 showCharacter: false, strokeAnimationSpeed: 1, delayBetweenStrokes: 200,
             });
